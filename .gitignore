@@ -1,0 +1,28 @@
+# Build output
+build/
+.gradle/
+out/
+run/
+
+# Disposable packaged-runtime gate (Forge install copies + generated worlds)
+run-packaged/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.eclipse/
+.classpath
+.project
+.settings/
+
+# Compile-only / runtime-only third-party JARs. Never commit or ship these.
+# GeckoLib, Isle of Berk, and Variant Loader remain local references only.
+libs/
+
+# Logs and backups
+*.bak
+*.log
+build.log

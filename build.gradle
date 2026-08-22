@@ -1,0 +1,99 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '5.1.77'
+    id 'org.spongepowered.mixin' version '0.7.38'
+}
+
+def forgeVersion = project.findProperty('forgeVersion') ?: '40.3.12'
+version = project.findProperty('version') ?: '0.1.0-beta.1'
+group = project.findProperty('group') ?: 'network.vonix.isleofberkgeckolibfixes'
+archivesBaseName = project.findProperty('archivesBaseName') ?: 'isleofberk-geckolib-fixes'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.18.2'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            // Official mappings + remap=false GeckoLib targets: see docs/REMAPPING.md.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods { isleofberkgeckolibfixes { source sourceSets.main } }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            args 'nogui'
+            mods { isleofberkgeckolibfixes { source sourceSets.main } }
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, 'isleofberkgeckolibfixes.refmap.json'
+    config 'isleofberkgeckolibfixes.mixins.json'
+}
+
+repositories {
+    mavenCentral()
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.18.2-${forgeVersion}"
+    // Compile against original GeckoLib 3.0.57 only. Do not compile against Isle of Berk
+    // or Variant Loader: this companion must not take a source dependency on either.
+    compileOnly files('libs/geckolib-forge-1.18-3.0.57.jar')
+    runtimeOnly fg.deobf('local:geckolib-forge-1.18-3.0.57:3.0.57')
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+processResources {
+    def replaceProperties = [version: project.version]
+    inputs.properties replaceProperties
+    filesMatching('META-INF/mods.toml') { expand replaceProperties }
+}
+
+jar {
+    manifest {
+        attributes([
+            "Specification-Title"     : "isleofberk-geckolib-fixes",
+            "Specification-Vendor"    : "Vonix-Network",
+            "Specification-Version"   : "1",
+            "Implementation-Title"    : project.name,
+            "Implementation-Version"  : project.version,
+            "Implementation-Vendor"   : "Vonix-Network",
+            "MixinConfigs"            : "isleofberkgeckolibfixes.mixins.json"
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.register('verifyCandidateSources', Exec) {
+    group = 'verification'
+    description = 'Reject Deadlock Fix / Variant Loader scope in candidate sources.'
+    workingDir projectDir
+    commandLine 'python3', 'scripts/verify-candidate.py', '--phase', 'sources'
+}
+
+tasks.register('verifyCandidatePackaging', Exec) {
+    group = 'verification'
+    description = 'Inspect the reobfuscated JAR for mixin/config/archive contract.'
+    dependsOn 'reobfJar', 'verifyCandidateSources'
+    workingDir projectDir
+    commandLine 'python3', 'scripts/verify-candidate.py', '--phase', 'artifact',
+            '--jar', "${projectDir}/build/libs/${archivesBaseName}-${version}.jar"
+}
+
+tasks.named('check') {
+    dependsOn 'verifyCandidatePackaging'
+}

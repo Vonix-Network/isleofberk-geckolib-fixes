@@ -1,0 +1,14 @@
+network/vonix/isleofberkdeadlockfix
+com/GACMD
+nordmods
+software/bernie/geckolib
+software/bernie/geckolib3
+isleofberkdeadlockfix.mixins.json
+isleofberkdeadlockfix.variant.mixins.json
+isleofberkdeadlockfix.gecko.mixins.json
+isleofberkdeadlockfix.refmap.json
+ADragonBaseMixin
+AltFollowGoalMixin
+iobvariantloader
+geckolib-forge
+isleofberk-1.

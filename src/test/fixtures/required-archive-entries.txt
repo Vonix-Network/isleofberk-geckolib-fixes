@@ -1,0 +1,7 @@
+META-INF/MANIFEST.MF
+META-INF/mods.toml
+pack.mcmeta
+isleofberkgeckolibfixes.mixins.json
+isleofberkgeckolibfixes.refmap.json
+network/vonix/isleofberkgeckolibfixes/IsleOfBerkGeckoLibFixes.class
+network/vonix/isleofberkgeckolibfixes/mixin/AnimationControllerProcessMixin.class
