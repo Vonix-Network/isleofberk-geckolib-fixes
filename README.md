@@ -13,7 +13,7 @@ Berk, and does **not** replace Isle of Berk Deadlock Fix.
 > clients still running the final `isleofberk-1.2.0` jar with original
 > `geckolib-forge-1.18-3.0.57` on Minecraft 1.18.2.
 
-## What this candidate does
+## What this beta does
 
 GeckoLib 3.0.57 `AnimationController.process` can dereference a missing
 `boneSnapshot` during an animation transition. Upstream guarded that with
@@ -70,7 +70,7 @@ renders Isle of Berk entities. Server install is extra, not a substitute.
 | GeckoLib | `geckolib-forge-1.18-3.0.57` (original, not Refined) | `[3.0.57,3.0.58)` |
 | Isle of Berk | `isleofberk-1.2.0` | `[1.2.0,1.3)` |
 
-The Mixin is bytecode-specific to GeckoLib 3.0.57 `process`. This candidate
+The Mixin is bytecode-specific to GeckoLib 3.0.57 `process`. This beta
 does **not** claim GeckoLib 3.0.x, 3.1, Fabric, Quilt, or later Minecraft
 versions. It is **not** tested with GeckoLib-Refined (Refined already contains
 the in-tree guard). Do not install this companion as a general GeckoLib
@@ -148,7 +148,7 @@ Known gates for `v0.1.0-beta.3`:
   boot does not load `AnimationController`, so it cannot prove the bytecode
   hook applied.
 
-Not exercised by this candidate unless a later report says otherwise:
+Not exercised by this beta:
 
 - Minecraft client render of Skrill / Monstrous Nightmare / other IoB dragons.
 - Multiplayer clients connecting through a production proxy.
