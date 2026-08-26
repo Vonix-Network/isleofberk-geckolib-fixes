@@ -5,8 +5,8 @@ A tiny Forge 1.18.2 compatibility companion that ports
 `boneSnapshot` null-snapshot guard onto original GeckoLib `3.0.57` through a
 Mixin.
 
-`v0.1.0-beta.3` is a **testable compatibility candidate**. It is **not** a
-final release. It does **not** replace GeckoLib, does **not** replace Isle of
+`v0.1.0-beta.3` is an **experimental beta prerelease**. It is **not** a
+stable release. It does **not** replace GeckoLib, does **not** replace Isle of
 Berk, and does **not** replace Isle of Berk Deadlock Fix.
 
 > Isle of Berk itself is officially discontinued. This companion is for
@@ -94,7 +94,7 @@ Expected constructor log line:
 ```
 [network.vonix.isleofberkgeckolibfixes.IsleOfBerkGeckoLibFixes/]:
   [IoB-GeckoLibFixes] AnimationController.process boneSnapshot guard loaded
-  (v0.1.0-beta.3 compatibility candidate). This companion does not replace
+  (v0.1.0-beta.3 beta prerelease). This companion does not replace
   GeckoLib or Isle of Berk.
 ```
 
@@ -135,7 +135,7 @@ mods.toml, manifest, refmap, and archive inventory.
 
 ## Validation limits
 
-This beta candidate is **not** a claim that the Isle of Berk dragon-render
+This beta prerelease is **not** a claim that the Isle of Berk dragon-render
 crash is fixed in production play.
 
 Known gates for `v0.1.0-beta.3`:

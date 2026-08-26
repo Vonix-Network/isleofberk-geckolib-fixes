@@ -1,6 +1,6 @@
 # Validation limits for v0.1.0-beta.3
 
-`v0.1.0-beta.3` is a testable compatibility candidate. Treat every claim below
+`v0.1.0-beta.3` is an experimental beta prerelease. Treat every claim below
 as a gate, not as a production-crash-fixed statement.
 
 ## Deterministic checks (always part of `./gradlew build`)

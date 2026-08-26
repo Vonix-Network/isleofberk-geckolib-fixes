@@ -12,7 +12,7 @@ public class IsleOfBerkGeckoLibFixes {
     public IsleOfBerkGeckoLibFixes() {
         LOGGER.info(
                 "[IoB-GeckoLibFixes] AnimationController.process boneSnapshot guard loaded "
-                        + "(v0.1.0-beta.3 compatibility candidate). This companion does not replace "
+                        + "(v0.1.0-beta.3 beta prerelease). This companion does not replace "
                         + "GeckoLib or Isle of Berk.");
     }
 }
