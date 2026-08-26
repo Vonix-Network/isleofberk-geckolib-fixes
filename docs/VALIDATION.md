@@ -1,6 +1,6 @@
-# Validation limits for v0.1.0-beta.1
+# Validation limits for v0.1.0-beta.2
 
-`v0.1.0-beta.1` is a testable compatibility candidate. Treat every claim below
+`v0.1.0-beta.2` is a testable compatibility candidate. Treat every claim below
 as a gate, not as a production-crash-fixed statement.
 
 ## Deterministic checks (always part of `./gradlew build`)
@@ -20,20 +20,28 @@ Source phase:
 
 Artifact phase (reobfuscated primary JAR):
 
-- File name is `isleofberk-geckolib-fixes-0.1.0-beta.1.jar`.
+- File name is `isleofberk-geckolib-fixes-0.1.0-beta.2.jar`.
 - Required entries listed in `src/test/fixtures/required-archive-entries.txt`
   are present.
 - Forbidden archive prefixes listed in
   `src/test/fixtures/forbidden-archive-prefixes.txt` are absent (no bundled
   GeckoLib, Isle of Berk, Variant Loader, or Deadlock Fix classes).
 - `META-INF/mods.toml` has `modId="isleofberkgeckolibfixes"`, version
-  `0.1.0-beta.1`, GeckoLib range `[3.0.57,3.0.58)`, no `iobvariantloader`
+  `0.1.0-beta.2`, GeckoLib range `[3.0.57,3.0.58)`, no `iobvariantloader`
   dependency, and `displayTest="IGNORE_ALL_VERSION"`.
 - Manifest `MixinConfigs` equals `isleofberkgeckolibfixes.mixins.json`.
 - Mixin JSON lists only `AnimationControllerProcessMixin` and points at
   `isleofberkgeckolibfixes.refmap.json`.
 - Refmap file exists. Empty `mappings`/`data` is accepted for this
   `remap = false` GeckoLib hook; a missing file is not.
+
+## Beta.2 correction
+
+Beta.1 only copied `IBone#getInitialSnapshot()` and silently skipped the
+repair when that snapshot was null. Beta.2 copies a fresh snapshot from
+`IBone#saveSnapshot()`, which constructs it from the live bone state. This
+directly covers the `UDivjgc` failure mode while preserving the same narrow
+GeckoLib 3.0.57 hook.
 
 ## Packaged Forge runtime (optional, dedicated server)
 

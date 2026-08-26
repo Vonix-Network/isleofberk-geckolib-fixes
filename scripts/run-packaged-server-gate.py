@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "run-packaged"
 FORGE_SRC = Path("/root/work/iob-gecko-bonesnapshot-mixin-runtime-20260822-r1")
 JAVA_HOME = Path("/usr/lib/jvm/java-17-openjdk-amd64")
-ARTIFACT = ROOT / "build/libs/isleofberk-geckolib-fixes-0.1.0-beta.1.jar"
+ARTIFACT = ROOT / "build/libs/isleofberk-geckolib-fixes-0.1.0-beta.2.jar"
 GECKOLIB = ROOT / "libs/geckolib-forge-1.18-3.0.57.jar"
 ISLEOFBERK = ROOT / "libs/isleofberk-1.2.0.jar"
 SERVER_PORT = "25791"
@@ -77,6 +77,8 @@ def prepare_runtime() -> None:
     )
     mods = RUNTIME / "mods"
     mods.mkdir(exist_ok=True)
+    for stale in mods.glob("isleofberk-geckolib-fixes-*.jar"):
+        stale.unlink()
     for src in (ARTIFACT, GECKOLIB, ISLEOFBERK):
         if not src.is_file():
             raise SystemExit(f"missing mod jar {src}")

@@ -5,10 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-`v0.1.0-beta.1` is a testable compatibility candidate. It is not a final
+`v0.1.0-beta.2` is a testable compatibility candidate. It is not a final
 release and does not replace GeckoLib or Isle of Berk.
 
 ## [Unreleased]
+
+## [0.1.0-beta.2] - 2026-08-26
+
+### Fixed
+- Seed missing transition snapshots with `IBone.saveSnapshot()` instead of
+  skipping the repair when `IBone.getInitialSnapshot()` is null. This covers
+  the residual failure shown by the `UDivjgc` crash report.
 
 ## [0.1.0-beta.1] - 2026-08-22
 
@@ -19,7 +26,7 @@ release and does not replace GeckoLib or Isle of Berk.
 - Exact-descriptor inject into
   `software.bernie.geckolib3.core.controller.AnimationController.process` after
   `saveSnapshotsForAnimation`, seeding a missing snapshot from the matched
-  bone's initial snapshot before the original transition loop dereferences it.
+  bone before the original transition loop dereferences it.
 - Narrow GeckoLib dependency range `[3.0.57,3.0.58)` and Isle of Berk range
   `[1.2.0,1.3)`, tested against Forge `1.18.2-40.3.12` / Java 17.
 - Client-required, dedicated-server-optional install contract with

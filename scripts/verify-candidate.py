@@ -13,7 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = ROOT / "src" / "main"
 FIXTURES = ROOT / "src" / "test" / "fixtures"
-EXPECTED_JAR_NAME = "isleofberk-geckolib-fixes-0.1.0-beta.1.jar"
+EXPECTED_JAR_NAME = "isleofberk-geckolib-fixes-0.1.0-beta.2.jar"
+EXPECTED_VERSION = "0.1.0-beta.2"
 MOD_ID = "isleofberkgeckolibfixes"
 MIXIN_JSON = "isleofberkgeckolibfixes.mixins.json"
 REFMAP = "isleofberkgeckolibfixes.refmap.json"
@@ -87,8 +88,8 @@ def verify_sources() -> list[str]:
         raise CheckError("mixin uses @Pseudo; compile-classpath GeckoLib target must be exact")
     if "remap = false" not in mixin_text:
         raise CheckError("mixin is missing remap = false")
-    if "getInitialSnapshot" not in mixin_text:
-        raise CheckError("mixin does not seed from getInitialSnapshot")
+    if "saveSnapshot()" not in mixin_text:
+        raise CheckError("mixin does not seed from IBone.saveSnapshot")
     notes.append("source namespace, mixin descriptor, and forbidden-scope scan passed")
 
     mixin_json_path = SRC_ROOT / "resources" / MIXIN_JSON
@@ -173,15 +174,15 @@ def verify_artifact(jar: Path) -> list[str]:
         folded = re.sub(r"\r?\n[ \t]", "", manifest)
         if "MixinConfigs: isleofberkgeckolibfixes.mixins.json" not in folded:
             raise CheckError(f"manifest MixinConfigs mismatch:\n{manifest}")
-    if "Implementation-Version: 0.1.0-beta.1" not in manifest:
-        raise CheckError("manifest Implementation-Version is not 0.1.0-beta.1")
+    if f"Implementation-Version: {EXPECTED_VERSION}" not in manifest:
+        raise CheckError(f"manifest Implementation-Version is not {EXPECTED_VERSION}")
     notes.append("manifest contract passed")
 
     mods_toml = read_zip_text(jar, "META-INF/mods.toml")
     if 'modId="isleofberkgeckolibfixes"' not in mods_toml:
         raise CheckError("packaged mods.toml has wrong modId")
-    if "0.1.0-beta.1" not in mods_toml:
-        raise CheckError("packaged mods.toml is missing expanded version 0.1.0-beta.1")
+    if EXPECTED_VERSION not in mods_toml:
+        raise CheckError(f"packaged mods.toml is missing expanded version {EXPECTED_VERSION}")
     if "${version}" in mods_toml:
         raise CheckError("packaged mods.toml still contains unexpanded ${version}")
     if 'versionRange="[3.0.57,3.0.58)"' not in mods_toml:

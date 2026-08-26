@@ -34,10 +34,11 @@ import software.bernie.geckolib3.core.snapshot.BoneSnapshot;
  *
  * <p>This injects at the exact descriptor of {@code process} immediately after
  * {@code saveSnapshotsForAnimation}. Missing entries are copied from the
- * matched live bone's initial snapshot so the original transition loop sees a
- * non-null value. Optional/pseudo targets are not used: GeckoLib 3.0.57 is on
- * the compile classpath, so Mixin AP must fail the build if the hook
- * disappears.</p>
+ * matched live bone's current state with {@link IBone#saveSnapshot()} so the
+ * original transition loop sees a non-null value even when
+ * {@link IBone#getInitialSnapshot()} was never populated. Optional/pseudo
+ * targets are not used: GeckoLib 3.0.57 is on the compile classpath, so Mixin
+ * AP must fail the build if the hook disappears.</p>
  */
 @Mixin(value = AnimationController.class, remap = false)
 public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
@@ -79,9 +80,9 @@ public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
 
             for (IBone bone : modelRendererList) {
                 if (bone != null && boneAnimation.boneName.equals(bone.getName())) {
-                    BoneSnapshot initialSnapshot = bone.getInitialSnapshot();
-                    if (initialSnapshot != null) {
-                        boneSnapshots.put(boneAnimation.boneName, new BoneSnapshot(initialSnapshot));
+                    BoneSnapshot currentSnapshot = bone.saveSnapshot();
+                    if (currentSnapshot != null) {
+                        boneSnapshots.put(boneAnimation.boneName, currentSnapshot);
                     }
                     break;
                 }
