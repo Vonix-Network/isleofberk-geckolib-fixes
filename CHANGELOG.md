@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-`v0.1.0-beta.2` is a testable compatibility candidate. It is not a final
+`v0.1.0-beta.3` is a testable compatibility candidate. It is not a final
 release and does not replace GeckoLib or Isle of Berk.
 
 ## [Unreleased]
+
+## [0.1.0-beta.3] - 2026-08-26
+
+### Fixed
+- Repair missing controller snapshots at `AnimationController.process` entry,
+  not only after `saveSnapshotsForAnimation`.
+- Prefer GeckoLib's existing collection snapshot and fall back to a snapshot
+  constructed from the matched live bone.
 
 ## [0.1.0-beta.2] - 2026-08-26
 

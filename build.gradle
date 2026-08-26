@@ -6,7 +6,7 @@ plugins {
 }
 
 def forgeVersion = project.findProperty('forgeVersion') ?: '40.3.12'
-version = project.findProperty('version') ?: '0.1.0-beta.2'
+version = project.findProperty('version') ?: '0.1.0-beta.3'
 group = project.findProperty('group') ?: 'network.vonix.isleofberkgeckolibfixes'
 archivesBaseName = project.findProperty('archivesBaseName') ?: 'isleofberk-geckolib-fixes'
 

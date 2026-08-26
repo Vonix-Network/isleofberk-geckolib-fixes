@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,13 +33,14 @@ import software.bernie.geckolib3.core.snapshot.BoneSnapshot;
  * read ({@code rotationValueX} and siblings) then throws
  * {@code NullPointerException} on the client render path.</p>
  *
- * <p>This injects at the exact descriptor of {@code process} immediately after
- * {@code saveSnapshotsForAnimation}. Missing entries are copied from the
- * matched live bone's current state with {@link IBone#saveSnapshot()} so the
- * original transition loop sees a non-null value even when
- * {@link IBone#getInitialSnapshot()} was never populated. Optional/pseudo
- * targets are not used: GeckoLib 3.0.57 is on the compile classpath, so Mixin
- * AP must fail the build if the hook disappears.</p>
+ * <p>This injects at the exact descriptor of {@code process} at entry and
+ * immediately after {@code saveSnapshotsForAnimation}. Missing entries first
+ * reuse GeckoLib's collection snapshot and otherwise use a snapshot
+ * constructed from the matched live bone, so the original transition loop sees
+ * a non-null value even when {@link IBone#getInitialSnapshot()} was never
+ * populated or the transition snapshot call was not reached on that frame.
+ * Optional/pseudo targets are not used: GeckoLib 3.0.57 is on the compile
+ * classpath, so Mixin AP must fail the build if the hook disappears.</p>
  */
 @Mixin(value = AnimationController.class, remap = false)
 public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
@@ -48,6 +50,22 @@ public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
 
     @Shadow(remap = false)
     protected Animation currentAnimation;
+
+    @Inject(
+            method = "process(DLsoftware/bernie/geckolib3/core/event/predicate/AnimationEvent;Ljava/util/List;Ljava/util/Map;Lsoftware/bernie/geckolib3/core/molang/MolangParser;Z)V",
+            at = @At("HEAD"),
+            require = 1,
+            remap = false)
+    private void vonix$seedMissingBoneSnapshotsAtProcessStart(
+            double tick,
+            AnimationEvent<T> event,
+            List<IBone> modelRendererList,
+            Map<String, Pair<IBone, BoneSnapshot>> boneSnapshotCollection,
+            MolangParser parser,
+            boolean crashWhenCantFindBone,
+            CallbackInfo ci) {
+        vonix$repairMissingBoneSnapshots(currentAnimation, modelRendererList, boneSnapshotCollection);
+    }
 
     @Inject(
             method = "process(DLsoftware/bernie/geckolib3/core/event/predicate/AnimationEvent;Ljava/util/List;Ljava/util/Map;Lsoftware/bernie/geckolib3/core/molang/MolangParser;Z)V",
@@ -65,12 +83,20 @@ public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
             MolangParser parser,
             boolean crashWhenCantFindBone,
             CallbackInfo ci) {
-        if (currentAnimation == null || currentAnimation.boneAnimations == null || boneSnapshots == null
+        vonix$repairMissingBoneSnapshots(currentAnimation, modelRendererList, boneSnapshotCollection);
+    }
+
+    @Unique
+    private void vonix$repairMissingBoneSnapshots(
+            Animation animation,
+            List<IBone> modelRendererList,
+            Map<String, Pair<IBone, BoneSnapshot>> boneSnapshotCollection) {
+        if (animation == null || animation.boneAnimations == null || boneSnapshots == null
                 || modelRendererList == null) {
             return;
         }
 
-        for (BoneAnimation boneAnimation : currentAnimation.boneAnimations) {
+        for (BoneAnimation boneAnimation : animation.boneAnimations) {
             if (boneAnimation == null || boneAnimation.boneName == null) {
                 continue;
             }
@@ -78,14 +104,25 @@ public abstract class AnimationControllerProcessMixin<T extends IAnimatable> {
                 continue;
             }
 
-            for (IBone bone : modelRendererList) {
-                if (bone != null && boneAnimation.boneName.equals(bone.getName())) {
-                    BoneSnapshot currentSnapshot = bone.saveSnapshot();
-                    if (currentSnapshot != null) {
-                        boneSnapshots.put(boneAnimation.boneName, currentSnapshot);
-                    }
-                    break;
+            BoneSnapshot fallback = null;
+            if (boneSnapshotCollection != null) {
+                Pair<IBone, BoneSnapshot> collectionEntry = boneSnapshotCollection.get(boneAnimation.boneName);
+                if (collectionEntry != null && collectionEntry.getRight() != null) {
+                    fallback = new BoneSnapshot(collectionEntry.getRight());
                 }
+            }
+
+            if (fallback == null) {
+                for (IBone bone : modelRendererList) {
+                    if (bone != null && boneAnimation.boneName.equals(bone.getName())) {
+                        fallback = new BoneSnapshot(bone);
+                        break;
+                    }
+                }
+            }
+
+            if (fallback != null) {
+                boneSnapshots.put(boneAnimation.boneName, fallback);
             }
         }
     }

@@ -13,7 +13,7 @@ displayURL="https://github.com/Vonix-Network/isleofberk-geckolib-fixes"
 displayTest="IGNORE_ALL_VERSION"
 authors="Vonix-Network"
 description='''
-Testable 0.1.0-beta.2 compatibility candidate. Guards GeckoLib 3.0.57
+Testable 0.1.0-beta.3 compatibility candidate. Guards GeckoLib 3.0.57
 AnimationController.process when a boneSnapshot is missing by seeding it from
 the matched bone's current state. This is not a GeckoLib fork and does not
 replace GeckoLib or Isle of Berk.

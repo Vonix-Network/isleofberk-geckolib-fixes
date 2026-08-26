@@ -5,7 +5,7 @@ A tiny Forge 1.18.2 compatibility companion that ports
 `boneSnapshot` null-snapshot guard onto original GeckoLib `3.0.57` through a
 Mixin.
 
-`v0.1.0-beta.1` is a **testable compatibility candidate**. It is **not** a
+`v0.1.0-beta.3` is a **testable compatibility candidate**. It is **not** a
 final release. It does **not** replace GeckoLib, does **not** replace Isle of
 Berk, and does **not** replace Isle of Berk Deadlock Fix.
 
@@ -27,17 +27,17 @@ java.lang.NullPointerException: Cannot read field "rotationValueX"
   at software.bernie.geckolib3.core.controller.AnimationController.process
 ```
 
-GeckoLib-Refined fixed this in-tree by lazy-initialising the snapshot from the
-matched bone's `getInitialSnapshot()` and caching it. This companion carries
-the same behaviour into original GeckoLib 3.0.57:
+This companion repairs the missing entry in original GeckoLib 3.0.57 without
+forking GeckoLib:
 
 1. Target
    `software.bernie.geckolib3.core.controller.AnimationController.process`
    with the exact 3.0.57 descriptor.
-2. Inject immediately after `saveSnapshotsForAnimation`.
+2. Inject at `process` entry and immediately after `saveSnapshotsForAnimation`.
 3. For each bone on the current animation whose snapshot is still missing,
-   copy the live model's initial snapshot into `boneSnapshots` before the
-   original transition loop reads `rotationValueX` / position / scale.
+   reuse GeckoLib's collection snapshot when available; otherwise construct a
+   fresh snapshot from the matched live bone before the original transition
+   loop reads `rotationValueX` / position / scale.
 
 This is the same injection point used by the prior feasibility prototype. The
 prototype's temporary `Class.forName` probe, Deadlock Fix mixins, and Variant
@@ -82,7 +82,7 @@ This jar does not provide them.
 
 ## Installation
 
-1. Build or obtain `isleofberk-geckolib-fixes-0.1.0-beta.1.jar`.
+1. Build or obtain `isleofberk-geckolib-fixes-0.1.0-beta.3.jar`.
 2. Keep original `geckolib-forge-1.18-3.0.57.jar` and `isleofberk-1.2.0.jar`
    installed. Do **not** remove them.
 3. Drop this companion into the **client** `mods/` folder. Repeat for every
@@ -94,7 +94,7 @@ Expected constructor log line:
 ```
 [network.vonix.isleofberkgeckolibfixes.IsleOfBerkGeckoLibFixes/]:
   [IoB-GeckoLibFixes] AnimationController.process boneSnapshot guard loaded
-  (v0.1.0-beta.1 compatibility candidate). This companion does not replace
+  (v0.1.0-beta.3 compatibility candidate). This companion does not replace
   GeckoLib or Isle of Berk.
 ```
 
@@ -110,7 +110,7 @@ into software.bernie.geckolib3.core.controller.AnimationController
 ## Removal / rollback
 
 1. Stop the client (and the dedicated server if you installed it there).
-2. Delete `isleofberk-geckolib-fixes-0.1.0-beta.1.jar` from `mods/`.
+2. Delete `isleofberk-geckolib-fixes-0.1.0-beta.3.jar` from `mods/`.
 3. Leave GeckoLib 3.0.57 and Isle of Berk 1.2.0 in place.
 4. Restart.
 
@@ -124,7 +124,7 @@ Requires JDK 17 and internet access for ForgeGradle's first resolution.
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ./gradlew clean build --no-daemon
-# Output: build/libs/isleofberk-geckolib-fixes-0.1.0-beta.1.jar
+# Output: build/libs/isleofberk-geckolib-fixes-0.1.0-beta.3.jar
 ```
 
 `libs/` is for local compile-only / run-only dependency JARs. It is gitignored
@@ -138,7 +138,7 @@ mods.toml, manifest, refmap, and archive inventory.
 This beta candidate is **not** a claim that the Isle of Berk dragon-render
 crash is fixed in production play.
 
-Known gates for `v0.1.0-beta.1`:
+Known gates for `v0.1.0-beta.3`:
 
 - Java 17 ForgeGradle compile and reobfuscation of this companion.
 - Packaged-JAR metadata / Mixin / refmap / forbidden-scope inspection.

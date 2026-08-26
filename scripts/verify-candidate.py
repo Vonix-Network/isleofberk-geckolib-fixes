@@ -13,8 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = ROOT / "src" / "main"
 FIXTURES = ROOT / "src" / "test" / "fixtures"
-EXPECTED_JAR_NAME = "isleofberk-geckolib-fixes-0.1.0-beta.2.jar"
-EXPECTED_VERSION = "0.1.0-beta.2"
+EXPECTED_JAR_NAME = "isleofberk-geckolib-fixes-0.1.0-beta.3.jar"
+EXPECTED_VERSION = "0.1.0-beta.3"
 MOD_ID = "isleofberkgeckolibfixes"
 MIXIN_JSON = "isleofberkgeckolibfixes.mixins.json"
 REFMAP = "isleofberkgeckolibfixes.refmap.json"
@@ -88,8 +88,8 @@ def verify_sources() -> list[str]:
         raise CheckError("mixin uses @Pseudo; compile-classpath GeckoLib target must be exact")
     if "remap = false" not in mixin_text:
         raise CheckError("mixin is missing remap = false")
-    if "saveSnapshot()" not in mixin_text:
-        raise CheckError("mixin does not seed from IBone.saveSnapshot")
+    if "saveSnapshot()" not in mixin_text and "new BoneSnapshot(bone)" not in mixin_text:
+        raise CheckError("mixin does not seed from a live IBone snapshot")
     notes.append("source namespace, mixin descriptor, and forbidden-scope scan passed")
 
     mixin_json_path = SRC_ROOT / "resources" / MIXIN_JSON
